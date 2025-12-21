@@ -1,74 +1,117 @@
 # **TrackKids – Project Specifications Document**
 
-## 1. **Project Overview**
+## 1. Project Overview
 
 **Project Name:** TrackKids
 **Type:** Mobile Application (Android & iOS)
 **Technology:** Flutter, Dart, Firebase/SQLite
+
 **Project Description:**
 TrackKids is a parental control application designed to help parents monitor and manage their children’s digital activity. It provides features for managing screen time, blocking applications, filtering web content, tracking GPS location, and monitoring social media usage.
 
 ---
 
-## 2. **Objectives**
+## 2. Objectives
 
-* Provide a safe digital environment for children.
-* Allow parents to monitor device usage and activities remotely.
-* Enable tracking and locating devices in case of loss or theft.
-* Simplify parental control through an intuitive mobile interface.
+The main goal is to develop an Android mobile application with two modules (Parent and Child), enabling:
 
----
-
-## 3. **Functional Requirements**
-
-1. **Screen Time Management**
-
-   * Parents can set daily usage limits.
-   * Notifications when limits are approaching or exceeded.
-
-2. **Application Blocking**
-
-   * Block selected apps on children’s devices.
-   * Schedule app access by time or day.
-
-3. **Web Content Filtering**
-
-   * Block inappropriate websites.
-   * Filter content based on categories or custom rules.
-
-4. **GPS Location Tracking**
-
-   * Real-time location tracking of the child’s device.
-   * History of visited locations.
-
-5. **Activity Reports**
-
-   * Track app usage, browsing history, calls, and SMS.
-   * Generate daily/weekly/monthly activity reports.
-
-6. **Social Media Control**
-
-   * Restrict access to platforms like Instagram, Snapchat, TikTok.
-   * Monitor social media usage.
-
-7. **Device Security**
-
-   * Locate device in case of theft or loss.
-   * Remote lock or alert feature.
+* Real-time GPS location tracking of the child
+* Basic app blocking
+* Screen access control
+* Secure web navigation
+* Viewing a simple activity history
 
 ---
 
-## 4. **Non-Functional Requirements**
+## 3. Project Scope
 
-* **Performance:** The app must work smoothly on both Android and iOS devices.
-* **Security:** Data must be encrypted and stored securely (Firebase recommended).
-* **Usability:** User-friendly and intuitive interface for parents.
-* **Reliability:** 99% uptime for backend services.
-* **Scalability:** Ability to manage multiple child profiles.
+### 3.1 Included Features
+
+* Parent authentication
+* Parent–Child device association via a unique ID
+* GPS location updates at fixed intervals
+* Visual blocking of selected applications
+* Manual screen blocking
+* Web navigation through a secure WebView
+* Simple activity history display
+
+### 3.2 Excluded Features
+
+* Monitoring of calls and SMS
+* Analysis of message content
+* Advanced AI-based web filtering
+* iOS support (initially Android only)
+* Advanced anti-theft features
 
 ---
 
-## 5. **Technical Specifications**
+## 4. System Actors
+
+| Actor    | Description                                        |
+| -------- | -------------------------------------------------- |
+| Parent   | Main user who controls the child’s device settings |
+| Child    | Device controlled by the parent                    |
+| Firebase | Backend system for authentication and data storage |
+
+---
+
+## 5. Functional Description
+
+### 5.1 Parent Application
+
+* Secure sign-up and login
+* Generation of a unique Child ID
+* Display of the child’s GPS location on a map
+* Selection of apps to block
+* Activate/deactivate screen blocking
+* View simple activity reports
+
+### 5.2 Child Application
+
+* Link device to Parent account
+* Periodically send GPS location
+* Monitor the current foreground app
+* Display overlay for blocked apps
+* Secure web navigation
+* Log basic activity history
+
+---
+
+## 6. Functional Requirements
+
+| ID   | Requirement                                           |
+| ---- | ----------------------------------------------------- |
+| FR-1 | System must allow the Parent to authenticate securely |
+| FR-2 | System must allow Parent–Child device association     |
+| FR-3 | System must display the child’s GPS location          |
+| FR-4 | System must visually block selected apps              |
+| FR-5 | System must allow manual screen blocking              |
+| FR-6 | System must store activity logs in the database       |
+
+**Key Functional Modules:**
+
+1. **Screen Time Management**: Set daily usage limits, notifications for nearing limits.
+2. **Application Blocking**: Block selected apps, schedule access.
+3. **Web Content Filtering**: Block inappropriate websites, filter by categories.
+4. **GPS Location Tracking**: Real-time tracking, location history.
+5. **Activity Reports**: Track app usage, browsing history, generate reports.
+6. **Social Media Control**: Restrict access, monitor usage.
+7. **Device Security**: Locate device, remote lock or alert feature.
+
+---
+
+## 7. Non-Functional Requirements
+
+* **Performance:** Smooth operation on Android devices
+* **Security:** Secure data storage via Firebase
+* **Usability:** Intuitive interface for parents
+* **Reliability:** 99% backend uptime
+* **Scalability:** Support multiple child profiles
+* **Compatibility:** Android only (for MVP)
+
+---
+
+## 8. Technical Specifications
 
 * **Frontend & Backend:** Flutter & Dart
 * **Database:** Firebase Firestore / SQLite
@@ -76,42 +119,119 @@ TrackKids is a parental control application designed to help parents monitor and
 * **Location Services:** Google Maps API / Flutter Location plugin
 * **Notifications:** Firebase Cloud Messaging (FCM)
 
----
+**Android Services:**
 
-## 6. **Project Deliverables**
+* Usage Stats
+* Accessibility Service
+* Overlay Window
 
-* Fully functional TrackKids mobile app (Android & iOS).
-* Source code hosted on GitHub.
-* Documentation (README, user guide, and setup guide).
-* Activity reports and screenshots of all features.
+**General Architecture:**
 
----
-
-## 7. **Project Timeline**
-
-| Phase   | Description                          | Duration |
-| ------- | ------------------------------------ | -------- |
-| Phase 1 | Requirement Analysis & Specification | 1 week   |
-| Phase 2 | UI/UX Design                         | 1 week   |
-| Phase 3 | Backend & Database Setup             | 1 week   |
-| Phase 4 | Frontend Development (Flutter)       | 2 weeks  |
-| Phase 5 | Integration & Testing                | 1 week   |
-| Phase 6 | Deployment & Documentation           | 1 week   |
+* Flutter mobile app (Parent + Child modules)
+* Real-time communication via Firestore
+* Android services for app monitoring and blocking
 
 ---
 
-## 8. **Constraints & Risks**
+## 9. Project Constraints
 
-* Dependency on internet connection for real-time features.
-* Privacy and security of children’s data must be ensured.
-* Compliance with parental control and app store regulations.
+* Developed by a single person
+* Limited development time (1 week MVP)
+* Simplified features for feasibility
+* Compliance with privacy and data protection
 
 ---
 
-## 9. **Future Enhancements**
+## 10. Project Timeline
 
-* AI-based content filtering.
-* Advanced analytics on children’s digital behavior.
-* Integration with smart home devices.
+| Day   | Task                               |
+| ----- | ---------------------------------- |
+| Day 1 | Firebase setup + Parent & Child UI |
+| Day 2 | GPS location functionality         |
+| Day 3 | App blocking implementation        |
+| Day 4 | Secure WebView navigation          |
+| Day 5 | Screen blocking overlay            |
+| Day 6 | Activity logs + testing            |
+| Day 7 | Optimization + documentation       |
+
+---
+
+## 11. Project Deliverables
+
+* Parent Application
+* Child Application
+* Firebase database
+* Flutter source code
+* Project report
+* Functional demonstration
+
+---
+
+## 12. Validation Criteria
+
+* Authentication works correctly
+* Child location displayed on the map
+* Selected applications are blocked visually
+* Activity logs accessible
+* Stable application without crashes
+
+---
+
+## 13. Simplified MVP Implementation Approach
+
+All features are implemented according to a **Minimum Viable Product (MVP)** approach to ensure feasibility within a limited timeframe. Solutions prioritize **simplicity**, **stability**, and **functional demonstration**.
+
+### 13.1 Authentication (Parent)
+
+* **Implementation:** Firebase Authentication (Email & Password)
+* **Simplifications:** No biometrics, social login, or advanced role management
+
+### 13.2 Parent–Child Association
+
+* **Implementation:** Unique static Child ID entered manually
+* **Simplifications:** No QR codes, multi-child management, or email/SMS verification
+
+### 13.3 GPS Location
+
+* **Implementation:** Updates every 5 minutes when app is active
+* **Simplifications:** No continuous background tracking, only last position stored
+
+### 13.4 Application Blocking
+
+* **Implementation:** Monitor foreground app via Usage Stats API, overlay visual block
+* **Simplifications:** No device admin/deep system blocking
+
+### 13.5 Screen Blocking
+
+* **Implementation:** Full-screen overlay controlled via Firestore boolean
+* **Simplifications:** No automated scheduling, no system lock
+
+### 13.6 Web Filtering
+
+* **Implementation:** WebView with fixed blacklist
+* **Simplifications:** No network-wide filtering, no page content analysis
+
+### 13.7 Activity Reports
+
+* **Implementation:** Logs key events (blocked apps, screen block, GPS send) in Firestore
+* **Simplifications:** No advanced statistics or graphs
+
+### 13.8 Data Synchronization
+
+* **Implementation:** Real-time via Firestore Streams
+* **Simplifications:** No offline caching or queue management
+
+### 13.9 Security & Privacy
+
+* **Implementation:** Secure access via Firebase Auth, basic Firestore rules by Parent UID
+* **Simplifications:** No application-level encryption, no advanced GDPR compliance
+
+| Feature        | MVP Choice           | Objective                |
+| -------------- | -------------------- | ------------------------ |
+| Authentication | Firebase Auth simple | Minimal security         |
+| Location       | Last position only   | Reduce complexity        |
+| App Blocking   | Visual overlay       | Avoid Device Admin       |
+| Web Filtering  | WebView + blacklist  | Basic control            |
+| Reports        | Simple logs          | Functional demonstration |
 
 
