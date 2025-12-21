@@ -26,41 +26,96 @@
 
 ---
 
-## **Installation**
-
-1. **Clone the repository:**  
-```bash
-git clone https://github.com/<your-username>/TrackKids.git
-cd TrackKids
-````
-
-2. **Install dependencies:**
-
-```bash
-flutter pub get
-```
-
-3. **Run the app:**
-
-```bash
-flutter run
-```
-
----
-
 ## **Folder Structure**
 
 ```
-TrackKids/
-├── android/         # Android native code
-├── ios/             # iOS native code
-├── lib/             # Flutter source code
-│   ├── screens/     # UI screens
-│   ├── models/      # Data models
-│   ├── services/    # API / Firebase / location services
-│   ├── widgets/     # Reusable widgets
-│   └── main.dart    # Entry point
-├── assets/          # Images, icons, fonts
-├── pubspec.yaml     # Flutter configuration
+trackkids/
+│
+├── android/                # Configuration Android native
+├── ios/                    # (non utilisé – Android only)
+├── lib/
+│   ├── main.dart
+│   │
+│   ├── core/               # Logique commune
+│   │   ├── constants/
+│   │   │   ├── app_colors.dart
+│   │   │   ├── app_strings.dart
+│   │   │   └── firestore_paths.dart
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── permissions_helper.dart
+│   │   │   └── validators.dart
+│   │   │
+│   │   └── widgets/
+│   │       ├── custom_button.dart
+│   │       ├── loading_widget.dart
+│   │       └── error_widget.dart
+│   │
+│   ├── models/             # Modèles de données
+│   │   ├── parent_model.dart
+│   │   ├── child_model.dart
+│   │   └── activity_model.dart
+│   │
+│   ├── services/           # Accès aux services externes
+│   │   ├── firebase_service.dart
+│   │   ├── auth_service.dart
+│   │   ├── location_service.dart
+│   │   ├── app_block_service.dart
+│   │   ├── overlay_service.dart
+│   │   └── webview_service.dart
+│   │
+│   ├── features/           # Fonctionnalités par rôle
+│   │
+│   │   ├── auth/
+│   │   │   ├── login_page.dart
+│   │   │   ├── register_page.dart
+│   │   │   └── auth_controller.dart
+│   │
+│   │   ├── parent/
+│   │   │   ├── dashboard/
+│   │   │   │   ├── parent_dashboard_page.dart
+│   │   │   │   └── parent_dashboard_controller.dart
+│   │   │   │
+│   │   │   ├── child_management/
+│   │   │   │   ├── generate_child_id_page.dart
+│   │   │   │   └── child_management_controller.dart
+│   │   │   │
+│   │   │   ├── location/
+│   │   │   │   ├── child_location_page.dart
+│   │   │   │   └── child_location_controller.dart
+│   │   │   │
+│   │   │   ├── app_blocking/
+│   │   │   │   ├── app_block_page.dart
+│   │   │   │   └── app_block_controller.dart
+│   │   │   │
+│   │   │   ├── reports/
+│   │   │   │   ├── activity_report_page.dart
+│   │   │   │   └── activity_report_controller.dart
+│   │   │
+│   │   ├── child/
+│   │   │   ├── pairing/
+│   │   │   │   ├── child_pairing_page.dart
+│   │   │   │   └── child_pairing_controller.dart
+│   │   │   │
+│   │   │   ├── monitoring/
+│   │   │   │   ├── app_monitor_page.dart
+│   │   │   │   └── app_monitor_controller.dart
+│   │   │   │
+│   │   │   ├── web/
+│   │   │   │   ├── safe_browser_page.dart
+│   │   │   │   └── web_controller.dart
+│   │   │   │
+│   │   │   └── overlay/
+│   │   │       └── block_overlay_page.dart
+│   │   │
+│   ├── routes/
+│   │   └── app_routes.dart
+│   │
+│   └── providers/
+│       ├── auth_provider.dart
+│       ├── parent_provider.dart
+│       └── child_provider.dart
+│
+├── pubspec.yaml
 └── README.md
 ```
