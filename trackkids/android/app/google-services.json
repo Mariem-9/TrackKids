@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "220031302942",
+    "project_id": "trackkids-e494b",
+    "storage_bucket": "trackkids-e494b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220031302942:android:28da3f252f1be255c15d0f",
+        "android_client_info": {
+          "package_name": "com.example.trackkids"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4G8NrzslXJuEWNlHYtxjjRhTHsIsBeVk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
