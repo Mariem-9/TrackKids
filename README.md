@@ -112,6 +112,7 @@ trackkids/
 │   │   └── app_routes.dart
 │   │
 │   └── providers/
+│       ├── theme_provider.dart
 │       ├── auth_provider.dart
 │       ├── parent_provider.dart
 │       └── child_provider.dart
@@ -119,3 +120,49 @@ trackkids/
 ├── pubspec.yaml
 └── README.md
 ```
+---
+
+## 🎨 Theme & Palette Management
+
+This project uses a dynamic Theme Extension system to manage multiple color palettes. This allows us to switch between the three predefined brand palettes (Orange/Slate, Earthy/Sage, Soft Sunset) at runtime without restarting the app.
+
+### 📂 Architecture
+
+* **_lib/core/constants/app_colors.dart:_** Defines the ProjectColors class (ThemeExtension) and the static palette presets.
+* **_lib/providers/theme_provider.dart:_** Manages the state of the current theme and provides the ThemeData to the app.
+* **_lib/main.dart:**_ Listens to the provider to rebuild the app when the palette changes
+
+### How to Use
+**1. Accessing Colors in Widgets** : To use a color from the current active palette, use **_Theme.of(context)_**. 
+
+🛑 Do not hardcode hex values in your features.
+
+```
+@override
+Widget build(BuildContext context) {
+// Access the custom palette extension
+final palette = Theme.of(context).extension<ProjectColors>()!;
+
+return Scaffold(
+backgroundColor: palette.background,
+appBar: AppBar(
+backgroundColor: palette.primary,
+title: Text("TrackKids", style: TextStyle(color: palette.neutral)),
+),
+);
+}
+```
+
+**2. Switching the Palette** : To change the palette (e.g., from a settings page), call the updatePalette method from the ThemeProvider.
+```
+// Example: Switching to the Earthy/Sage palette (Image 2)
+Provider.of<ThemeProvider>(context, listen: false)
+.updatePalette(ProjectColors.paletteTwo);
+```
+
+3. Adding a New Palette :If you want to add a fourth palette:
+
+* Go to lib/core/constants/app_colors.dart.
+* Add a new static const instance of ProjectColors with your new hex codes.
+
+ ✨ **_It will immediately be available to the ThemeProvider_**
