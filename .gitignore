@@ -1,0 +1,7 @@
+# IDE
+.idea/
+.vscode/
+
+# Flutter
+build/
+.dart_tool/
