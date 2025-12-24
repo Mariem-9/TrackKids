@@ -69,7 +69,9 @@ trackkids/
 │   │   ├── auth/
 │   │   │   ├── login_page.dart
 │   │   │   ├── register_page.dart
-│   │   │   └── auth_controller.dart
+│   │   │   ├── auth_controller.dart
+│   │   │   ├── welcome_page.dart
+│   │   │   └── role_router.dart
 │   │
 │   │   ├── parent/
 │   │   │   ├── dashboard/

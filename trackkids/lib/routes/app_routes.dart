@@ -3,12 +3,15 @@ import '../features/test/test_firebase_page.dart';
 import '../features/test/test_location_page.dart';
 import '../features/test/test_pairing_page.dart';
 import '../features/child/pairing/child_pairing_page.dart';
+import '../features/parent/location/child_location_page.dart';
 
 class AppRoutes {
   static const String testFirebase = '/testFirebase';
   static const String testLocation = '/testLocation';
   static const String testPairing = '/testPairing';
   static const String childPairing = '/childPairing';
+  static const String parentLocation = '/parentLocation';
+
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -20,6 +23,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => TestPairingPage());
       case childPairing:
         return MaterialPageRoute(builder: (_) => const ChildPairingPage());
+      case parentLocation:
+        return MaterialPageRoute(
+          builder: (_) => const ChildLocationPage(childId: 'testChild001'),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const ChildPairingPage());
     }

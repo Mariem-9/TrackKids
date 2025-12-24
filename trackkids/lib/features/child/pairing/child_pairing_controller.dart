@@ -7,7 +7,7 @@ class ChildPairingController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Pair a child device with the currently authenticated parent
+  /// Creates a child record in Firestore and links it to the logged-in parent.
   Future<void> pairChildWithParent(String childId) async {
     final user = _auth.currentUser;
 
@@ -32,6 +32,26 @@ class ChildPairingController {
         .doc(childId)
         .set(child.toMap(), SetOptions(merge: true));
   }
+
+  /// Marks this phone as the physical device assigned to that child.
+  Future<void> attachThisDeviceToChild(String childId) async {
+    final doc = await _firestore
+        .collection(FirestorePaths.children)
+        .doc(childId)
+        .get();
+
+    if (!doc.exists) {
+      throw Exception("Invalid Child ID. Ask your parent to create one.");
+    }
+
+    await _firestore
+        .collection(FirestorePaths.children)
+        .doc(childId)
+        .set({
+      'deviceLinked': true,
+    }, SetOptions(merge: true));
+  }
+
 
   /// Fetch a child document as a ChildModel
   Future<ChildModel?> getChild(String childId) async {

@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'core/constants/app_colors.dart';
 import 'providers/theme_provider.dart';
 import 'routes/app_routes.dart';
+import 'features/auth/role_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +40,9 @@ class TrackKidsApp extends StatelessWidget {
       title: 'TrackKids',
       debugShowCheckedModeBanner: false,
       theme: themeProvider.currentTheme, // Uses the dynamic palette
+      home: const RoleRouter(),
       onGenerateRoute: AppRoutes.generateRoute,
-      initialRoute: AppRoutes.childPairing,
     );
   }
 }
+
