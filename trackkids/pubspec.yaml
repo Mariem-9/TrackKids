@@ -41,6 +41,9 @@ dependencies:
   cloud_firestore: ^5.6.0
   google_maps_flutter: ^2.6.0
 
+  device_apps: ^2.2.0  # To list and check installed apps on the device
+  flutter_foreground_task: ^3.10.0  # To run a task in the background (foreground service)
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
