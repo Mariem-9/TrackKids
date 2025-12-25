@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// ignore: unused_import
 import 'core/constants/app_colors.dart';
 import 'providers/theme_provider.dart';
 import 'routes/app_routes.dart';
