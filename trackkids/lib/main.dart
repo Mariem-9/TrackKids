@@ -16,7 +16,7 @@ Future<void> main() async {
 
   // ===== Connect to Firebase Emulators =====
   // Firestore Emulator
-  FirebaseFirestore.instance.useFirestoreEmulator('10.0.2.2', 8080);
+  FirebaseFirestore.instance.useFirestoreEmulator('10.0.2.2', 8081);
   // Auth Emulator
   FirebaseAuth.instance.useAuthEmulator('10.0.2.2', 9099);
 
