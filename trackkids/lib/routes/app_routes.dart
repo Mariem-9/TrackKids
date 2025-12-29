@@ -4,6 +4,10 @@ import '../features/test/test_location_page.dart';
 import '../features/test/test_pairing_page.dart';
 import '../features/child/pairing/child_pairing_page.dart';
 import '../features/parent/location/child_location_page.dart';
+import '../features/parent/anti_theft/anti_theft_page.dart';
+import '../features/parent/rapport/ReportsSelectionPage.dart';
+import '../features/parent/rapport/LocationLogPage.dart';
+
 
 class AppRoutes {
   static const String testFirebase = '/testFirebase';
@@ -11,6 +15,10 @@ class AppRoutes {
   static const String testPairing = '/testPairing';
   static const String childPairing = '/childPairing';
   static const String parentLocation = '/parentLocation';
+  static const String antiTheft = '/antiTheft';
+  static const String reportsMenu = '/reportsMenu';
+  static const String locationLogs = '/locationLogs';
+
 
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -27,6 +35,19 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => const ChildLocationPage(childId: 'testChild001'),
         );
+      case antiTheft:
+        return MaterialPageRoute(
+          builder: (_) => AntiTheftPage(childId: 'testChild001'),
+        );
+      case reportsMenu:
+        return MaterialPageRoute(
+          builder: (_) => ReportsSelectionPage(childId: 'testChild001'),
+        );
+      case locationLogs:
+        return MaterialPageRoute(
+          builder: (_) => LocationLogPage(childId:'testChild001'),
+        );
+
       default:
         return MaterialPageRoute(builder: (_) => const ChildPairingPage());
     }

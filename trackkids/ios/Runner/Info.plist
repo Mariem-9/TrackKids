@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Background GPS -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
+
+    <!-- Location permission texts -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We track your child’s location to keep them safe.</string>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We track your child’s location to keep them safe.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We track your child’s location even in background to ensure safety.</string>
+
 </dict>
 </plist>

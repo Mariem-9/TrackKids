@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:trackkids/models/antitheftcommands_model.dart';
+import 'package:trackkids/models/locationlog_model.dart';
+
 class ChildModel {
   final String childId;
   final String parentId;
@@ -7,12 +10,17 @@ class ChildModel {
   final double? longitude;
   final Timestamp? lastUpdated;
 
+  final AntiTheftCommandsModel? antiTheftCommands;
+  final List<LocationLog>? locationLogs;
+
   ChildModel({
     required this.childId,
     required this.parentId,
     this.latitude,
     this.longitude,
     this.lastUpdated,
+    this.antiTheftCommands,
+    this.locationLogs,
   });
 
   // Convert Firestore document to ChildModel
@@ -23,6 +31,15 @@ class ChildModel {
       latitude: map['latitude']?.toDouble(),
       longitude: map['longitude']?.toDouble(),
       lastUpdated: map['lastUpdated'],
+      antiTheftCommands: map['antiTheftCommands'] != null
+          ? AntiTheftCommandsModel.fromMap(map['antiTheftCommands'])
+          : null,
+      locationLogs: map['locationLogs'] != null
+          ? List<LocationLog>.from(
+          map['locationLogs'].map((log) => LocationLog.fromMap(log))
+      )
+          : null,
+
     );
   }
 
@@ -34,6 +51,8 @@ class ChildModel {
       'latitude': latitude,
       'longitude': longitude,
       'lastUpdated': lastUpdated,
+      'antiTheftCommands': antiTheftCommands?.toMap(),
+      'locationLogs': locationLogs?.map((log) => log.toMap()).toList(),
     };
   }
 }

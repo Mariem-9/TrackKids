@@ -4,6 +4,13 @@ import '../../../services/location_service.dart';
 import '../../../models/child_model.dart';
 import '../../../core/constants/app_colors.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/background_location_service.dart';
+import '../../../services/anti_theft_service.dart';
+
+import 'package:flutter_background_service/flutter_background_service.dart';
+
+
 class ChildPairingPage extends StatefulWidget {
   const ChildPairingPage({super.key});
 
@@ -16,35 +23,150 @@ class _ChildPairingPageState extends State<ChildPairingPage> {
   final ChildPairingController _controller = ChildPairingController();
   bool _loading = false;
 
+  /// 🛡️ Listener Anti-Theft
+  @override
+  void initState() {
+    super.initState();
+
+    /// 🛡️ Listener Anti-Theft: show Message Popup
+    FlutterBackgroundService().on('showMessage').listen((event) {
+      if (event != null) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Parent Message"),
+            content: Text(event['message']),
+            actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("OK"))],
+          ),
+        );
+      }
+    });
+    /// 🛡️ Listener Anti-Theft: show lock screen
+    FlutterBackgroundService().on('showLockScreen').listen((event) {
+      // Access the palette from the top-level context
+      final palette = Theme.of(context).extension<ProjectColors>()!;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => WillPopScope(
+          onWillPop: () async => false,
+          child: Scaffold(
+            // Using a deep red for urgency or your palette's neutral for a "Blackout" look
+            backgroundColor: const Color(0xFFB71C1C),
+            body: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 1. High-Visibility Security Icon
+                  const Icon(
+                    Icons.report_problem_rounded,
+                    color: Colors.white,
+                    size: 100,
+                  ),
+                  const SizedBox(height: 40),
+
+                  // 2. Clear, Authoritative Message
+                  const Text(
+                    "DEVICE LOCKED",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  Text(
+                    "This device has been remotely locked by a parent for security reasons.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 18,
+                    ),
+                  ),
+
+                  const SizedBox(height: 60),
+
+                  // 3. Status Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on, color: Colors.white, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          "Tracking Active",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+
   Future<void> _pair() async {
     setState(() => _loading = true);
 
     try {
       final childId = _childIdController.text.trim();
 
-      // 1️⃣ Attach device to child
+      // Attach this phone to child
       await _controller.attachThisDeviceToChild(childId);
+      // Get parentId from current user
+      final child = await _controller.getChild(childId);
+      if (child == null) throw Exception("Child not found in Firestore");
 
-      // 2️⃣ Fetch full ChildModel from Firestore
-      ChildModel? child = await _controller.getChild(childId);
-      if (child == null) throw Exception("Failed to fetch child after pairing.");
+      final parentId = child.parentId;
 
-      // 3️⃣ Start GPS tracking
-      LocationService().startTracking(child);
 
-      if (mounted) {
+      ChildModel childModel = ChildModel(
+        childId: childId,
+        parentId: parentId,
+      );
+      // 3️⃣ Start background tracking
+      LocationService().startTracking(childModel);
+
+      // Ask for location permissions
+      bool granted = await requestPermissions();
+      if (!granted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Child paired & GPS started')),
+          const SnackBar(content: Text("Location permissions are required")),
         );
+        return;
       }
+      // 🔥 Start REAL background GPS
+      startLocationService(child.childId, child.parentId);
+
+      // 🛡️ Start Anti-Theft Service
+      startAntiTheftService(child.childId);
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tracking started in background')),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     } finally {
-      if (mounted) setState(() => _loading = false);
+      setState(() => _loading = false);
     }
   }
 

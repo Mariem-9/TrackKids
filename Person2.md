@@ -375,23 +375,286 @@ Open Android Studio → Device Manager → Create Device → Pixel 7 → Then se
   3. Start both emulators at the same time.
 * Open two terminal for both Emulators
 
-✅ parentLocation : map apper with a marker on the location of chld 
+✅ parentLocation : map appear with a marker on the location of child 
+> C’est du **_“near-real-time polling”_** : Toutes les 30 secondes : Child → Firestore → Parent
+
+| Partie             | Statut                   |
+| ------------------ | ------------------------ |
+| Child → GPS        | ❌ Pas temps réel (timer) |
+| Child → Firestore  | ⚠️ toutes les 30s        |
+| Parent → Firestore | ✅ temps réel             |
+| Parent → Carte     | ✅ temps réel             |
+> Le système est semi-temps-réel, mais pas encore GPS live.
+
+#### 2. Persistent background GPS tracking for child
+🚨 Jusqu’à maintenant : child device only sends GPS while the app is in the **foreground.**
+On Android/iOS, apps in background are restricted from running code continuously.
+To run continuous GPS updates:
+1. Add packages in **_pubspec.yaml_**
+```
+dependencies:
+  flutter_background: ^1.3.0+1
+```
+2. Use a background task / service : in child paring modify
+```
+import 'package:flutter_background/flutter_background.dart';
+
+Future<void> enableBackgroundMode() async {
+    // ===== Initialize background execution (v1.3.0+1) =====
+    const androidConfig = FlutterBackgroundAndroidConfig(
+      notificationTitle: "TrackKids is running",
+      notificationText: "GPS tracking active",
+      notificationIcon: AndroidResource(name: 'background_icon', defType: 'drawable'),
+      shouldRequestBatteryOptimizationsOff: true,
+    );
+    bool success = await FlutterBackground.initialize(androidConfig: androidConfig);
+    if (success) {
+      await FlutterBackground.enableBackgroundExecution();
+    }
+  }
+```
+↪ Then call it :
+```
+await enableBackgroundMode();
+LocationService().startTracking(childModel);
+```
+3. Modify **_LocationService_** to track continuously : Only send a new GPS update if the child moved at least 10 meters.
+   
+🚨 User must select: **_Allow all the time_**
+**HOW?:** 
+Setting ➡ Apps ➡ Trackkids ➡ Permissions ➡ Location ➡ Allow all the Time
+Uncheck : Pause app activity if unused 
+
+5. Add in **_android/app/src/main/AndroidManifest.xml_**:
+```
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+```
+6. iOS Setup : Open **_ios/Runner/Info.plist_**.Inside the <dict>...</dict> block, add:
+```
+<!-- Background GPS -->
+<key>UIBackgroundModes</key>
+<array>
+    <string>location</string>
+</array>
+
+<!-- Location permission texts -->
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We track your child’s location to keep them safe.</string>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We track your child’s location to keep them safe.</string>
+
+<key>NSLocationAlwaysUsageDescription</key>
+<string>We track your child’s location even in background to ensure safety.</string>
+```
+🚨 Very important for iOS
+
+When you run the app on an iPhone or iOS simulator, iOS will now show two permission dialogs:
+
+1. “Allow while using the app”
+2. “Always allow” ← you must choose this
+
+Otherwise background tracking will be blocked.
+
+> **flutter_background** does NOT start a real Android foreground service. 
+It only asks Android not to kill the app too fast.
+**_On Android 10+ this is NOT enough for background GPS._**
+
+You need this:
+```
+Flutter UI
+└──> starts Android Foreground Service
+    └──> runs GPS loop
+        └──> writes to Firestore
+```
+Not:
+```
+Flutter widget → Timer → GPS   ❌ (dies when minimized)
+```
+1. Add packages in **_pubspec.yaml_**
+```
+dependencies:
+  flutter_background_service: ^5.0.5
+  permission_handler: ^11.2.0
+```
+2. Create **_background_location_service.dart_** : This file handles persistent background GPS tracking for the child device.
+It ensures:
+   * Permissions are requested.
+   * Firebase is initialized in the background isolate.
+   * GPS updates are sent every 15 seconds to Firestore.
+   * Android foreground service keeps the task alive.
+   * Background tracking works even when the app is minimized.
+
+| Service                                                           | Purpose now                                                                                                                                          |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LocationService`                                                 | Optional: still fine if you want **foreground tracking** while the child app is open. You can use it for testing or live map preview inside the app. |
+| `background_location_service.dart` / `flutter_background_service` | **Mandatory for real background GPS tracking**. This is the service that keeps sending the location even if the app is minimized or closed.          |
+
+3. Add in **_android/app/src/main/AndroidManifest.xml_**:
+```
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <service
+        android:name="id.flutter.flutter_background_service.BackgroundService"
+        android:foregroundServiceType="location"/>
+```
+4. Fix ChildPairingPage
+
+**How This Works with Background Service** :
+   1. Child enters ID → pairs device.
+   2. App requests permissions → ensures background GPS is allowed.
+   3. Background service starts → executes onStart in background isolate.
+   4. GPS updates sent periodically → every 15 seconds to Firestore.
+   5. Parent app reads Firestore → sees live child location.
+
+**Why Both LocationService() and startLocationService() Are Used**
+* LocationService() → foreground tracking, mainly for debugging or real-time foreground updates.
+* startLocationService() → true persistent background tracking, needed for minimized app behavior.
+
+**ChildPairingPage handles:**
+* Pairing the child device to a parent.
+* Asking for permissions.
+* Starting background GPS tracking.
+* Giving immediate feedback to the user.
+
+>It works seamlessly with your background_location_service.dart to ensure GPS is sent continuously, even when the app is minimized.
 
 ---
-### Objectif 4 : Allow the parent to see the child’s location on a map in real time and locate the device in case of loss or theft.
+### Objectif 4 : Allow the parent to remotely locate, ring, lock the child’s phone, display a lost message, and view location history (last known location and past movements) in case the device is lost or stolen
+Ce que je veut ajouter :
 
-**Real-Time Tracking**
+**Fonctionnalités côté Parent**
 
-* Listen to Firestore updates
-* Update the map when GPS changes
+| Bouton parent   | Effet sur le téléphone enfant         |
+| --------------- | ------------------------------------- |
+| 📍 Localiser    | Voir sa position en temps réel        |
+| 🔊 Faire sonner | Le téléphone sonne même en silencieux |
+| 🔒 Verrouiller  | Bloquer le téléphone                  |
+| 📝 Message      | Afficher “Ce téléphone est perdu…”    |
 
-**Locate Device (Anti-Theft)**
+**Location Logs**
 
-* Button: “Locate Phone”
-* Fetch and display last known location
-* (Optional MVP+) Trigger refresh from child device
+| Fonction             | Description                                 |
+| -------------------- | ------------------------------------------- |
+| 🕒 Dernière position | Affiche la dernière position connue + heure |
+| 🗺️ Historique       | Liste des anciennes positions               |
+| 📍 Trajets           | Visualisation du déplacement de l’enfant    |
+| 🔍 Recherche         | Filtrer par date                            |
 
-**Location Logs (Optional but strong)**
+**1. Définir l’architecture côté Parent**
 
-* Store previous locations
-* Show last known location/time
+* **_antiTheftCommands_** → parent écrit ici, child écoute.
+* **_locationLogs_** → historique des positions pour consultation ultérieure.
+```
+children (collection)
+ └─ childId (document)
+     ├─ latitude
+     ├─ longitude
+     ├─ lastUpdated
+     ├─ parentId
+     ├─ antiTheftCommands (map)
+     │   ├─ ring : bool
+     │   ├─ lock : bool
+     │   ├─ lostMessage : string
+     │   └─ locate : bool
+     └─ locationLogs (collection)
+         └─ timestamp (document)
+             ├─ latitude
+             └─ longitude
+```
+**2. Écouter les commandes côté Child**
+* Add packages in **_pubspec.yaml_**
+```
+dependencies:
+  flutter_ringtone_player: ^3.0.1
+```
+* Creer un service anti_theft_service.dart pour le téléphone enfant, prêt à écouter les commandes
+parent et agir en conséquence
+* Appeler ton service anti-theft dans _pair() après avoir démarré la localisation en background, 
+pour que l’enfant puisse écouter les commandes du parent.
+
+3. Côté Parent – UI
+Crée une page Anti-Theft.
+
+| Feature | Parent Action       | Background Response                     | Final Result                |
+| ------- | ------------------- | --------------------------------------- | --------------------------- |
+| Locate  | Sets `locate: true` | Fetch GPS → Update Firestore            | Map updates on Parent UI    |
+| Ring    | Sets `ring: true`   | Plays infinite loop ringtone            | Phone rings                 |
+| Lock    | Sets `lock: true`   | Updates notification → Show lock screen | Device displays lock screen |
+| Message | Writes text string  | Display notification                    | Child sees message          |
+
+| Côté                         | Fonction principale                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| **Parent (AntiTheftPage)**   | Interface pour envoyer des commandes et suivre l’enfant                            |
+| **Child (AntiTheftService)** | Service en arrière-plan qui exécute les commandes du parent et renvoie la position |
+
+4. Location Logs
+Update location service from this :
+```
+_sub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 0,
+        //Only send a new GPS update if the child moved at least 10 meters.
+        // distanceFilter: 10,
+      ),
+    ).listen((position) async {
+       await FirebaseFirestore.instance
+           .collection(FirestorePaths.children)
+           .doc(child.childId)
+           .set({
+         'latitude': position.latitude,
+         'longitude': position.longitude,
+         'lastUpdated': FieldValue.serverTimestamp(),
+       }, SetOptions(merge: true));
+
+       print("📍 BG GPS: ${position.latitude}");
+     });
+   }
+```
+To This : 
+```
+    _sub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 0,
+        //Only send a new GPS update if the child moved at least 10 meters.
+        // distanceFilter: 10,
+      ),
+    ).listen((position) async {
+      // 1. Prepare the log entry
+      final newLogEntry = {
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'timestamp': Timestamp.now(),
+      };
+
+      // 2. Update current position AND history log
+      await FirebaseFirestore.instance
+          .collection(FirestorePaths.children)
+          .doc(child.childId)
+          .set({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'lastUpdated': FieldValue.serverTimestamp(),
+        // Adds the new point to the history list
+        'locationLogs': FieldValue.arrayUnion([newLogEntry]),
+      }, SetOptions(merge: true));
+
+      print("📍 Logged Movement: ${position.latitude}");
+    });
+  }
+```
+Affichage côté Parent (UI)
+
+---
+Parent dashboard enhancements:
+Show multiple children if parent has more than one
+🚨To programmatically minimize the app (send it to the background) after starting GPS tracking
+1. Add packages in **_pubspec.yaml_**
+```
+dependencies:
+  android_intent_plus: ^3.0.3
+```
