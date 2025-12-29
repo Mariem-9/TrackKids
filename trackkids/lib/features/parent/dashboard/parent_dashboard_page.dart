@@ -109,16 +109,26 @@ class ParentDashboardPage extends StatelessWidget {
                   title: "Reports",
                   icon: Icons.bar_chart_rounded,
                   color: palette.tertiary!,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.reportsMenu,
+                    );
+                  },
                 ),
 
-                // Placeholder for Device Info
+                // Placeholder for AntiTheft Commande
                 _buildDashboardCard(
                   context,
-                  title: "Battery Level",
-                  icon: Icons.battery_charging_full_rounded,
-                  color: Colors.green,
-                  onTap: () {},
+                  title: "Anti-Theft",
+                  icon: Icons.security,
+                  color: Colors.red,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.antiTheft,
+                    );
+                  },
                 ),
               ],
             ),
