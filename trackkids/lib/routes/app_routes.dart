@@ -7,6 +7,8 @@ import '../features/parent/location/child_location_page.dart';
 import '../features/parent/anti_theft/anti_theft_page.dart';
 import '../features/parent/rapport/ReportsSelectionPage.dart';
 import '../features/parent/rapport/LocationLogPage.dart';
+import '../features/parent/blocked_site/blocked_sites_page.dart';
+import '../features/parent/rapport/activity_report_page.dart';
 
 
 class AppRoutes {
@@ -18,6 +20,8 @@ class AppRoutes {
   static const String antiTheft = '/antiTheft';
   static const String reportsMenu = '/reportsMenu';
   static const String locationLogs = '/locationLogs';
+
+  static const String blockedSites = '/blockedSites';
 
 
 
@@ -46,6 +50,11 @@ class AppRoutes {
       case locationLogs:
         return MaterialPageRoute(
           builder: (_) => LocationLogPage(childId:'testChild001'),
+        );
+
+      case blockedSites:
+        return MaterialPageRoute(
+          builder: (_) => BlockedSitesPage(childId: 'testChild001'),
         );
 
       default:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../routes/app_routes.dart';
+import 'activity_report_page.dart';
 
 class ReportsSelectionPage extends StatelessWidget {
   final String childId;
@@ -50,7 +51,23 @@ class ReportsSelectionPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
+            _buildReportOption(
+              context,
+              title: "Web Activity",
+              subtitle: "Blocked & allowed websites",
+              icon: Icons.language_rounded,
+              color: Colors.deepOrange,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ActivityReportPage(childId: childId),
+                  ),
+                );
+              },
+            ),
 
+            const SizedBox(height: 16),
             // 📱 App Usage Option
             _buildReportOption(
               context,

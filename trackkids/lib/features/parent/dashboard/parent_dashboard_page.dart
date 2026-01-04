@@ -103,6 +103,20 @@ class ParentDashboardPage extends StatelessWidget {
                   onTap: () {},
                 ),
 
+                //blocked sites
+                _buildDashboardCard(
+                  context,
+                  title: "Blocked Sites",
+                  icon: Icons.block,
+                  color: Colors.orange,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.blockedSites,
+                    );
+                  },
+                ),
+
                 // Placeholder for Activity Reports
                 _buildDashboardCard(
                   context,

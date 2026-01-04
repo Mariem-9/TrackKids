@@ -9,6 +9,7 @@ import '../../../services/background_location_service.dart';
 import '../../../services/anti_theft_service.dart';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
+import '../browser/safe_browse_page.dart';
 
 
 class ChildPairingPage extends StatefulWidget {
@@ -160,6 +161,14 @@ class _ChildPairingPageState extends State<ChildPairingPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tracking started in background')),
+      );
+
+      // ✅ REDIRECTION VERS LE NAVIGATEUR SÉCURISÉ
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SafeBrowserPage(childId: childId),
+        ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
