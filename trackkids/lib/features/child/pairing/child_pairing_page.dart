@@ -23,6 +23,8 @@ class _ChildPairingPageState extends State<ChildPairingPage> {
   final TextEditingController _childIdController = TextEditingController();
   final ChildPairingController _controller = ChildPairingController();
   bool _loading = false;
+  bool _showBrowserButton = false;
+
 
   /// 🛡️ Listener Anti-Theft
   @override
@@ -162,14 +164,20 @@ class _ChildPairingPageState extends State<ChildPairingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tracking started in background')),
       );
+      setState(() {
+        _showBrowserButton = true;
+      });
+
 
       // ✅ REDIRECTION VERS LE NAVIGATEUR SÉCURISÉ
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SafeBrowserPage(childId: childId),
-        ),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => SafeBrowserPage(childId: childId),
+      //   ),
+      // );
+
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
@@ -275,6 +283,40 @@ class _ChildPairingPageState extends State<ChildPairingPage> {
                 ),
               ),
             ),
+
+            if (_showBrowserButton) ...[
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final childId = _childIdController.text.trim();
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SafeBrowserPage(childId: childId),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: palette.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    "Open Safe Browser",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ]
+
           ],
         ),
       ),
