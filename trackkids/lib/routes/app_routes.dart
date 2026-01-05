@@ -10,6 +10,8 @@ import '../features/parent/rapport/LocationLogPage.dart';
 import '../features/parent/blocked_site/blocked_sites_page.dart';
 import '../features/parent/rapport/activity_report_page.dart';
 
+import '../features/parent/app_blocking/app_block_page.dart';
+import '../features/parent/screen_time/screen_time_page.dart';
 
 class AppRoutes {
   static const String testFirebase = '/testFirebase';
@@ -22,6 +24,9 @@ class AppRoutes {
   static const String locationLogs = '/locationLogs';
 
   static const String blockedSites = '/blockedSites';
+
+  static const String appBlock = '/appBlock';
+  static const String screenTime = '/screenTime';
 
 
 
@@ -51,6 +56,12 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => LocationLogPage(childId:'testChild001'),
         );
+
+      // New Parent features
+      case appBlock:
+        return MaterialPageRoute(builder: (_) => AppBlockPage(childId: 'testChild001'));
+      case screenTime:
+        return MaterialPageRoute(builder: (_) => ScreenTimePage(childId: 'testChild001'));
 
       case blockedSites:
         return MaterialPageRoute(
