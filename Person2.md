@@ -96,7 +96,6 @@ firebase emulators:start
 | Authentication | 127.0.0.1:9099 | [http://127.0.0.1:4000/auth](http://127.0.0.1:4000/auth)           |
 | Firestore      | 127.0.0.1:8080 | [http://127.0.0.1:4000/firestore](http://127.0.0.1:4000/firestore) |
 > Emulator UI: http://127.0.0.1:4000
-
 12. Open **_lib/main.dart_** → Connect to the Firebase Emulators :
 ``` 
 import 'package:cloud_firestore/cloud_firestore.dart';

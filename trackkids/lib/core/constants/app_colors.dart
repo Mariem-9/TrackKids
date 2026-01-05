@@ -8,6 +8,7 @@ class ProjectColors extends ThemeExtension<ProjectColors> {
   final Color? background;
   final Color? accent;
   final Color? neutral;
+  final Color? danger; // blocked apps
 
   const ProjectColors({
     this.primary,
@@ -16,10 +17,11 @@ class ProjectColors extends ThemeExtension<ProjectColors> {
     this.background,
     this.accent,
     this.neutral,
+    this.danger,
   });
 
   @override
-  ProjectColors copyWith({Color? primary, Color? secondary, Color? tertiary, Color? background, Color? accent, Color? neutral}) {
+  ProjectColors copyWith({Color? primary, Color? secondary, Color? tertiary, Color? background, Color? accent, Color? neutral, Color? danger,}) {
     return ProjectColors(
       primary: primary ?? this.primary,
       secondary: secondary ?? this.secondary,
@@ -27,6 +29,7 @@ class ProjectColors extends ThemeExtension<ProjectColors> {
       background: background ?? this.background,
       accent: accent ?? this.accent,
       neutral: neutral ?? this.neutral,
+      danger: danger ?? this.danger,
     );
   }
 
@@ -40,6 +43,7 @@ class ProjectColors extends ThemeExtension<ProjectColors> {
       background: Color.lerp(background, other.background, t),
       accent: Color.lerp(accent, other.accent, t),
       neutral: Color.lerp(neutral, other.neutral, t),
+      danger: Color.lerp(danger, other.danger, t),
     );
   }
 

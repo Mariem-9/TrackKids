@@ -94,13 +94,36 @@ class ParentDashboardPage extends StatelessWidget {
                   onTap: () => Navigator.pushNamed(context, AppRoutes.parentLocation),
                 ),
 
-                // Placeholder for App Blocking (Next Feature)
+                // // Placeholder for App Blocking (Next Feature)
+                // _buildDashboardCard(
+                //   context,
+                //   title: "App Limits",
+                //   icon: Icons.block_flipped,
+                //   color: palette.secondary!,
+                //   onTap: () {},
+                // ),
+                // App Blocking
                 _buildDashboardCard(
                   context,
-                  title: "App Limits",
+                  title: "App Blocking",
                   icon: Icons.block_flipped,
                   color: palette.secondary!,
-                  onTap: () {},
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.appBlock
+                  ),
+                ),
+
+                // Screen Time Management
+                _buildDashboardCard(
+                  context,
+                  title: "Screen Time",
+                  icon: Icons.timer_rounded,
+                  color: Colors.teal,
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.screenTime
+                  ),
                 ),
 
                 // Placeholder for Activity Reports

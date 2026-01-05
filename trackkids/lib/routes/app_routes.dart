@@ -8,6 +8,8 @@ import '../features/parent/anti_theft/anti_theft_page.dart';
 import '../features/parent/rapport/ReportsSelectionPage.dart';
 import '../features/parent/rapport/LocationLogPage.dart';
 
+import '../features/parent/app_blocking/app_block_page.dart';
+import '../features/parent/screen_time/screen_time_page.dart';
 
 class AppRoutes {
   static const String testFirebase = '/testFirebase';
@@ -18,6 +20,9 @@ class AppRoutes {
   static const String antiTheft = '/antiTheft';
   static const String reportsMenu = '/reportsMenu';
   static const String locationLogs = '/locationLogs';
+
+  static const String appBlock = '/appBlock';
+  static const String screenTime = '/screenTime';
 
 
 
@@ -47,6 +52,13 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => LocationLogPage(childId:'testChild001'),
         );
+
+      // New Parent features
+      case appBlock:
+        return MaterialPageRoute(builder: (_) => AppBlockPage(childId: 'testChild001'));
+      case screenTime:
+        return MaterialPageRoute(builder: (_) => ScreenTimePage(childId: 'testChild001'));
+
 
       default:
         return MaterialPageRoute(builder: (_) => const ChildPairingPage());
